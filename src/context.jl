@@ -15,8 +15,16 @@
 
 using Cassette
 
+function transform(ctx, ref)
+    ci = ref.code_info
+    ci.inlineable = true
+    return ci
+end
+
+const InlinePass = Cassette.@pass transform
+
 Cassette.@context CUDACtx
-const cudactx = Cassette.disablehooks(CUDACtx())
+const cudactx = Cassette.disablehooks(CUDACtx(pass = InlinePass))
 
 isdevice() = false
 function Cassette.overdub(ctx::CUDACtx, ::typeof(isdevice))
